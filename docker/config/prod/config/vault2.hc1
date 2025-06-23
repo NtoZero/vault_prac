@@ -1,0 +1,19 @@
+ui = true
+listener "tcp" {
+  address     = "0.0.0.0:8200"
+  tls_disable = 1
+}
+
+storage "raft" {
+  path    = "/vault/data"
+  node_id = "vault2"
+
+  # vault1 리더에게 조인
+  retry_join {
+    leader_api_addr = "http://vault1:8200"
+  }
+}
+
+cluster_addr = "http://vault2:8201"
+api_addr     = "http://vault2:8200"
+disable_mlock = true

@@ -1,0 +1,20 @@
+# ─────────────── UI & Listener ───────────────
+ui = true                                       # 웹 UI 활성화
+
+listener "tcp" {
+  address     = "0.0.0.0:8200"                  # 컨테이너 내부 포트
+  tls_disable = 1                               # 데모용. 운영 시 TLS 필수!
+}
+
+# ─────────── Storage (Raft HA) ───────────────
+storage "raft" {
+  path    = "/vault/data"                       # 데이터 경로 (volume)
+  node_id = "vault1"                            # 고유 노드 ID
+}
+
+# ─────────── 클러스터 네트워킹 ───────────────
+cluster_addr = "http://vault1:8201"
+api_addr     = "http://vault1:8200"
+
+# ─────────── Liveness Probe ───────────────
+disable_mlock = true                            # 도커 환경에서 mlock 실패 방지
