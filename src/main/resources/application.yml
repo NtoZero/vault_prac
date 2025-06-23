@@ -2,11 +2,13 @@ spring:
   application:
     name: vault-demo
   config:
-    import: "vault://secret/demo/config"
+    import:
+      - optional:file:.env[.properties]
+      - optional:vault://secret/local/config
   cloud:
     vault:
       uri: http://localhost:8200
-      token: ${VAULT_TOKEN:hvs.pF9dy3TjlR64xW2RLOUEyGyA}
+      token: ${VAULT_TOKEN:}
       kv:
         enabled: true
         backend: secret
