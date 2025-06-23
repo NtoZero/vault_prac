@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: vault-demo
+  config:
+    import: "vault://secret/demo/config"
+  cloud:
+    vault:
+      uri: http://localhost:8200
+      token: ${VAULT_TOKEN:hvs.pF9dy3TjlR64xW2RLOUEyGyA}
+      kv:
+        enabled: true
+        backend: secret
+  # 데이터소스 설정 (Vault에서 읽은 값 사용)
+  datasource:
+    username: ${database.username}
+    password: ${database.password}
+    url: ${database.url}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+
+server:
+  port: 8080
+
+# Vault에서 주입될 속성들 (플레이스홀더)
+app:
+  name: ${app.name:default-app}
+  version: ${app.version:1.0.0}
+  message: ${app.message:Hello from Vault!}
+  
+database:
+  username: ${database.username:default-user}
+  password: ${database.password:default-password}
+  url: ${database.url:jdbc:mysql://localhost:3306/demo}
+
+# Actuator 설정 (설정 확인용)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env,configprops
+  endpoint:
+    health:
+      show-details: always
+
+# 로깅 설정
+logging:
+  level:
+    vault.demo: INFO
+    org.springframework.cloud.vault: DEBUG
+    org.springframework.vault: DEBUG
+    org.springframework.cloud.config: DEBUG
+    org.springframework.boot.context.config: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
