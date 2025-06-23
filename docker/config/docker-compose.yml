@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  vault:
+    image: hashicorp/vault:1.17
+    container_name: vault
+    restart: unless-stopped
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_ADDR: "http://127.0.0.1:8200"
+      VAULT_API_ADDR: "http://127.0.0.1:8200"
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      # 1. 설정(Config) 볼륨: :ro (읽기 전용) 플래그를 제거합니다.
+      - ./volume/vault/config:/vault/config
+
+      # 2. 데이터(Data) 볼륨: 변경 없음
+      - ./volume/vault/data:/vault/file
+
+      # 3. 스크립트(Script) 볼륨: 읽기 전용을 유지해도 괜찮습니다.
+      #- ./volume/vault/scripts:/scripts:ro
+
+    # Vault 서버를 시작하고, 잠시 대기 후 초기화 스크립트를 실행하도록 command 추가
+    #command: >
+    #  sh -c "vault server -config=/vault/config/vault_config.hcl &
+    #  sleep 5 && /scripts/init.sh"
+
+  mysql:
+    image: mysql:8.4
+    container_name: mysql
+    restart: unless-stopped
+    env_file:
+      - ./env/mysql.env
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./volume/mysql/data:/var/lib/mysql
