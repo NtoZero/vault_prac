@@ -253,6 +253,14 @@ for k in $(jq -r '.unseal_keys_b64[0:3][]' init.json); do
   done
 done
 ```
+```powershell
+docker exec -it vault1 `
+  vault operator init `
+    -address="http://127.0.0.1:8200" `
+    -key-shares=5 `
+    -key-threshold=3 `
+    -format=json > init.json
+```
 
 ---
 
